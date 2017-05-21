@@ -28,25 +28,25 @@ void SpriteRenderer::drawSprite(Texture2D & texture, glm::vec2 position, glm::ve
 }
 
 void SpriteRenderer::initRenderData() {
-	vertices.push_back(VertexFormat(	// Bottom left
-		glm::vec3(-0.5f, -0.5f, 0.0f),
-		glm::vec2(0.0f, 0.0f)
+	vertices.push_back(VertexFormat(	// Top Right
+		glm::vec3(0.5f, 0.5f, 0.0f),
+		glm::vec2(1.0f, 1.0f)
 	));
 	vertices.push_back(VertexFormat(	// Bottom right
 		glm::vec3(0.5f, -0.5f, 0.0f),
 		glm::vec2(1.0f, 0.0f)
 	));
-	vertices.push_back(VertexFormat(	// Top right
-		glm::vec3(0.5f, 0.5f, 0.0f),
-		glm::vec2(1.0f, 1.0f)
+	vertices.push_back(VertexFormat(	// Bottom Left
+		glm::vec3(-0.5f, -0.5f, 0.0f),
+		glm::vec2(0.0f, 0.0f)
 	));
 	vertices.push_back(VertexFormat(	// Top left
 		glm::vec3(-0.5f, 0.5f, 0.0f),
 		glm::vec2(0.0f, 1.0f)
 	));
-	indices = { 
-		0, 1, 2, 
-		0, 2, 3 
+	indices = {
+		0, 1, 3, // First Triangle
+		1, 2, 3  // Second Triangle
 	}; // Face
 	
 	// Init buffers
