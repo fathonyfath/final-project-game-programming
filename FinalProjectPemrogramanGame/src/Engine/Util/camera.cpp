@@ -18,17 +18,11 @@ Camera::Camera(float screenWidth, float screenHeight) {
 	this->view = glm::lookAt(this->position + this->halfScreen, this->position + this->halfScreen + this->lookAt, this->up);
 }
 
-void Camera::draw() {
+void Camera::updateShaderViewProjection(Shader& shader) {
+	shader.setMatrix4("view", this->view, true);
+	shader.setMatrix4("projection", this->projection, true);
 }
 
 glm::vec3 Camera::screenToWorldSpace(glm::vec2 screenSpace) {
 	return glm::unProject(glm::vec3(screenSpace.x, screenSpace.y, 1.0f), this->view, this->projection, this->viewport);
-}
-
-glm::mat4 Camera::getView() {
-	return this->projection;
-}
-
-glm::mat4 Camera::getProjection() {
-	return this->projection;
 }
