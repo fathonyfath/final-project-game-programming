@@ -1,11 +1,11 @@
 #version 330 core
-in vec3 ourColor;
 in vec2 TexCoord;
 
 // Texture samplers
 uniform sampler2D ourTexture;
+uniform vec3 spriteColor;
 
 void main()
 {
-	gl_FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1);
+    gl_FragColor = vec4(spriteColor, 1.0) * texture(ourTexture, TexCoord);
 }
