@@ -49,9 +49,6 @@ public:
 
 	glm::vec3 getMousePos();
 
-	void setMainCamera(Camera* camera);
-	void unsetMainCamera();
-
 private:
 	vector<State*> states;
 	unsigned int lastFrame = 0, last = 0, _fps = 0, fps = 0;
@@ -68,7 +65,5 @@ private:
 	void getFPS();
 
 	void handleKeyEvent(Uint32 eventType, SDL_Keycode keycode);
-
-	Camera* mainCamera;
 	Input* input;
 };

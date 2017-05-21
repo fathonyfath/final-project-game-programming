@@ -6,14 +6,17 @@ GameState GameState::_instance;
 
 void GameState::init(GameEngine* engine) {
 	this->camera = new Camera(engine->getScreenWidth(), engine->getScreenHeight());
-	engine->setMainCamera(this->camera);
-	Texture2D texture = ResourceManager::loadTexture("wall.jpg", false, "Wall");
+
+	this->texture = ResourceManager::loadTexture("wall.jpg", false, "Wall");
 	Shader shader = ResourceManager::getShader("Sprite");
+
+	renderer = new SpriteRenderer(shader);
+	camera->updateShaderViewProjection(shader);
 }
 
 void GameState::cleanup(GameEngine* engine) {
-	engine->unsetMainCamera();
 	delete(this->camera);
+	delete(this->renderer);
 }
 
 void GameState::pause(GameEngine* engine) {
@@ -32,11 +35,13 @@ void GameState::update(GameEngine * engine) {
 
 void GameState::draw(GameEngine * engine) {
 	glViewport(0, 0, engine->getScreenWidth(), engine->getScreenHeight());
-	glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	this->renderer->drawSprite(this->texture, glm::vec2(worldPos.x, worldPos.y), glm::vec2(100, 100), 45.0f, glm::vec3(1, 1, 1));
 
 	glDisable(GL_BLEND);
 }

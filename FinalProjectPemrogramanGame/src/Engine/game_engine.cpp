@@ -60,7 +60,7 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 	this->input = new Input();
 
 	// Initialize Shader
-	Shader shaderSprite = ResourceManager::loadShader("sprite.vert", "sprite.frag", nullptr, "Sprite");
+	ResourceManager::loadShader("sprite.vert", "sprite.frag", nullptr, "Sprite");
 }
 
 void GameEngine::cleanup() {
@@ -153,12 +153,6 @@ void GameEngine::update() {
 }
 
 void GameEngine::draw() {
-	if (this->mainCamera != nullptr) {
-		Shader shader = ResourceManager::getShader("Sprite");
-		shader.setMatrix4("view", this->mainCamera->getView(), true);
-		shader.setMatrix4("projection", this->mainCamera->getProjection(), true);
-	}
-
 	glDisable(GL_BLEND);
 
 	// let the state draw the screen
@@ -205,14 +199,6 @@ const Input * GameEngine::getInput() {
 
 glm::vec3 GameEngine::getMousePos() {
 	return input->mousePos;
-}
-
-void GameEngine::setMainCamera(Camera * camera) {
-	this->mainCamera = camera;
-}
-
-void GameEngine::unsetMainCamera() {
-	this->mainCamera = nullptr;
 }
 
 void GameEngine::limitFPS() {

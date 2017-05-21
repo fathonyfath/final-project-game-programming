@@ -23,7 +23,9 @@ public:
 
 private:
 	static GameState _instance;
+	glm::vec3 worldPos;
 
 	Camera* camera;
-	glm::vec3 worldPos;
+	SpriteRenderer* renderer;
+	Texture2D texture;
 };
