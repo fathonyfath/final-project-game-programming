@@ -125,6 +125,7 @@ void GameEngine::handleEvent() {
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
 			handleKeyEvent(evt.type, evt.key.keysym.sym);
+			break;
 		case SDL_QUIT:
 			this->windowState = WindowState::EXIT;
 			break;
