@@ -15,8 +15,6 @@
 #include "Engine\Graphic\sprite_renderer.h"
 #include "Engine\Util\camera.h"
 
-#include "Engine\Util\box.h"
-
 using namespace std;
 
 enum class WindowState { RUNNING, EXIT };
@@ -73,6 +71,4 @@ private:
 
 	Camera* mainCamera;
 	Input* input;
-
-	GKV::Box box;
 };

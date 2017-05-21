@@ -61,9 +61,6 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 
 	// Initialize Shader
 	Shader shaderSprite = ResourceManager::loadShader("sprite.vert", "sprite.frag", nullptr, "Sprite");
-
-	box = GKV::Box(glm::vec2(100, 100), "wall.jpg", shaderSprite.id);
-	box.position = glm::vec2(0, 0);
 }
 
 void GameEngine::cleanup() {
@@ -155,22 +152,11 @@ void GameEngine::update() {
 }
 
 void GameEngine::draw() {
-	glViewport(0, 0, screenWidth, screenHeight);
-
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	if (this->mainCamera != nullptr) {
 		Shader shader = ResourceManager::getShader("Sprite");
 		shader.setMatrix4("view", this->mainCamera->getView(), true);
 		shader.setMatrix4("projection", this->mainCamera->getProjection(), true);
 	}
-
-	box.render();
-
 
 	glDisable(GL_BLEND);
 

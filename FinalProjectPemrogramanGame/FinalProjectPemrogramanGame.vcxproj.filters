@@ -39,9 +39,6 @@
     <ClCompile Include="src\Engine\Graphic\sprite_renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Util\box.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Engine\game_engine.h">
@@ -72,9 +69,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Engine\Graphic\sprite_renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Engine\Util\box.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

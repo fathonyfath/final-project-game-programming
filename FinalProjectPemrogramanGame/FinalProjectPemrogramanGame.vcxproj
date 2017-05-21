@@ -133,7 +133,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Engine\Graphic\sprite_renderer.cpp" />
-    <ClCompile Include="src\Engine\Util\box.cpp" />
     <ClCompile Include="src\Engine\Util\camera.cpp" />
     <ClCompile Include="src\Engine\game_engine.cpp" />
     <ClCompile Include="src\Engine\Util\resource_manager.cpp" />
@@ -143,7 +142,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Engine\Graphic\sprite_renderer.h" />
-    <ClInclude Include="include\Engine\Util\box.h" />
     <ClInclude Include="include\Engine\Util\camera.h" />
     <ClInclude Include="include\Engine\game_engine.h" />
     <ClInclude Include="include\Engine\Util\vertex_format.h" />

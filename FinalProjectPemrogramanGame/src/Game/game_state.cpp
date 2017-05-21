@@ -9,9 +9,6 @@ void GameState::init(GameEngine* engine) {
 	engine->setMainCamera(this->camera);
 	Texture2D texture = ResourceManager::loadTexture("wall.jpg", false, "Wall");
 	Shader shader = ResourceManager::getShader("Sprite");
-
-	box = GKV::Box(glm::vec2(100, 100), "wall.jpg", shader.id);
-	box.position = glm::vec2(0, 0);
 }
 
 void GameState::cleanup(GameEngine* engine) {
@@ -40,8 +37,6 @@ void GameState::draw(GameEngine * engine) {
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	box.render();
 
 	glDisable(GL_BLEND);
 }

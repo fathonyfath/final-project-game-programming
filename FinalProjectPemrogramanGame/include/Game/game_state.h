@@ -4,8 +4,6 @@
 #include "Engine\Util\camera.h"
 #include "Engine\Graphic\sprite_renderer.h"
 
-#include "Engine\Util\box.h"
-
 class GameState : public State {
 
 public:
@@ -28,6 +26,4 @@ private:
 
 	Camera* camera;
 	glm::vec3 worldPos;
-
-	GKV::Box box;
 };

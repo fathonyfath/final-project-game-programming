@@ -6,7 +6,7 @@ int main(int argc, char** argv) {
 	engine.init("Test Game Engine", 520, 620, false, WindowFlag::WINDOWED, 0, 1);
 	engine.setDebugFPS(true);
 
-	//engine.changeState(GameState::instance());
+	engine.changeState(GameState::instance());
 
 	while (engine.isRunning()) {
 		engine.updateFPS();
