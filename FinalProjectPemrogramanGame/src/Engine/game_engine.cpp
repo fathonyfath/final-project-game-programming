@@ -56,11 +56,14 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 	// Init delta time calculation
 	last = SDL_GetTicks();
 
-	// Initialize everything
+	// Initialize input module
 	this->input = new Input();
 
 	// Initialize Shader
-	ResourceManager::loadShader("sprite.vert", "sprite.frag", nullptr, "Sprite");
+	ResourceManager::loadShader("./resource/shader/sprite.vert", "./resource/shader/sprite.frag", nullptr, "Sprite");
+
+	// Initialize Sprites
+	ResourceManager::loadTexture("./resource/sprite/wall.jpg", false, "Wall");
 }
 
 void GameEngine::cleanup() {
