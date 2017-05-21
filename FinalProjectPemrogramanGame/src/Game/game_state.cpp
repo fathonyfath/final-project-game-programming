@@ -35,13 +35,13 @@ void GameState::update(GameEngine * engine) {
 
 void GameState::draw(GameEngine * engine) {
 	glViewport(0, 0, engine->getScreenWidth(), engine->getScreenHeight());
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	this->renderer->drawSprite(this->texture, glm::vec2(worldPos.x, worldPos.y), glm::vec2(100, 100), 45.0f, glm::vec3(1, 1, 1));
+	this->renderer->drawSprite(this->texture, glm::vec2(worldPos.x, worldPos.y), glm::vec2(100, 100), 45.0f, glm::vec3(0, 1, 1));
 
 	glDisable(GL_BLEND);
 }

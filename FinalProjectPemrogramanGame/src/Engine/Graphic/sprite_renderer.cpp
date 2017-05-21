@@ -30,25 +30,24 @@ void SpriteRenderer::drawSprite(Texture2D & texture, glm::vec2 position, glm::ve
 void SpriteRenderer::initRenderData() {
 	vertices.push_back(VertexFormat(	// Bottom left
 		glm::vec3(-0.5f, -0.5f, 0.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec2(0.0f, 0.0f)
 	));
 	vertices.push_back(VertexFormat(	// Bottom right
 		glm::vec3(0.5f, -0.5f, 0.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec2(1.0f, 0.0f)
 	));
 	vertices.push_back(VertexFormat(	// Top right
 		glm::vec3(0.5f, 0.5f, 0.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec2(1.0f, 1.0f)
 	));
 	vertices.push_back(VertexFormat(	// Top left
 		glm::vec3(-0.5f, 0.5f, 0.0f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec2(0.0f, 1.0f)
 	));
-	indices = { 0, 1, 2, 0, 2, 3 }; // Face
+	indices = { 
+		0, 1, 2, 
+		0, 2, 3 
+	}; // Face
 	
 	// Init buffers
 	GLuint VBO, EBO;
@@ -70,9 +69,7 @@ void SpriteRenderer::initRenderData() {
 	// Bind Attrib Pointer
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexFormat), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexFormat), (void*)(offsetof(VertexFormat, VertexFormat::color)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexFormat), (void*)(offsetof(VertexFormat, VertexFormat::texCoord)));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexFormat), (void*)(offsetof(VertexFormat, VertexFormat::texCoord)));
-	glEnableVertexAttribArray(2);
 	glBindVertexArray(0);
 }

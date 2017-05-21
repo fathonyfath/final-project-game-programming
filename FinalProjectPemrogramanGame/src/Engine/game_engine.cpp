@@ -153,8 +153,6 @@ void GameEngine::update() {
 }
 
 void GameEngine::draw() {
-	glDisable(GL_BLEND);
-
 	// let the state draw the screen
 	if (!states.empty()) {
 		states.back()->draw(this);
