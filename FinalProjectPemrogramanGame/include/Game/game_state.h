@@ -3,6 +3,7 @@
 #include "Engine\Util\state.h"
 #include "Engine\Util\camera.h"
 #include "Engine\Graphic\sprite_renderer.h"
+#include "Engine\game_object.h"
 
 class GameState : public State {
 
@@ -28,4 +29,6 @@ private:
 	Camera* camera;
 	SpriteRenderer* renderer;
 	Texture2D texture;
+
+	GameObject* wallGameObject;
 };

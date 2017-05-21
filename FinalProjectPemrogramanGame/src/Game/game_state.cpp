@@ -12,6 +12,9 @@ void GameState::init(GameEngine* engine) {
 
 	renderer = new SpriteRenderer(shader);
 	camera->updateShaderViewProjection(shader);
+
+	// Initialize GameObjects
+	wallGameObject = new GameObject(*renderer, texture, glm::vec3(100, 100, 0));
 }
 
 void GameState::cleanup(GameEngine* engine) {
@@ -31,6 +34,7 @@ void GameState::handleEvents(GameEngine * engine) {
 }
 
 void GameState::update(GameEngine * engine) {
+	wallGameObject->position = glm::vec3(worldPos.x, worldPos.y, 0.0f);
 }
 
 void GameState::draw(GameEngine * engine) {
@@ -41,7 +45,7 @@ void GameState::draw(GameEngine * engine) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	this->renderer->drawSprite(this->texture, glm::vec2(worldPos.x, worldPos.y), glm::vec2(100, 100), 45.0f, glm::vec3(1, 1, 1));
+	wallGameObject->render();
 
 	glDisable(GL_BLEND);
 }
