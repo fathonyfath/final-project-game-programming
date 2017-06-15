@@ -51,7 +51,7 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 
 	//Set VSYNC
 	SDL_GL_SetSwapInterval(vsync);
-
+	
 	this->windowState = WindowState::RUNNING;
 	// Init delta time calculation
 	last = SDL_GetTicks();
@@ -64,6 +64,7 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 
 	// Initialize Sprites
 	ResourceManager::loadTexture("./resource/sprite/wall.jpg", false, "Wall");
+	ResourceManager::loadTexture("./resource/sprite/pesawat.png", true, "Pesawat");
 }
 
 void GameEngine::cleanup() {
@@ -117,6 +118,7 @@ void GameEngine::popState() {
 
 void GameEngine::updateFPS() {
 	getFPS();
+	deltaTime = getDeltaTime() / 1000.0f;
 }
 
 void GameEngine::handleEvent() {
@@ -186,6 +188,14 @@ void GameEngine::logDebug(string debugString) {
 	std::cout << debugString << std::endl;
 }
 
+bool GameEngine::leftMouseDown() {
+	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
+}
+
+bool GameEngine::rightMouseDown() {
+	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
+}
+
 float GameEngine::getScreenHeight() {
 	return screenHeight;
 }
@@ -202,6 +212,10 @@ glm::vec3 GameEngine::getMousePos() {
 	return input->mousePos;
 }
 
+float GameEngine::getDeltaReadOnly() {
+	return deltaTime;
+}
+
 void GameEngine::limitFPS() {
 	//Limit the FPS to the max FPS
 	SDL_Delay((Uint32)(targetFrameTime));
@@ -212,7 +226,7 @@ float GameEngine::getDeltaTime() {
 	unsigned int delta = time - lastFrame;
 	lastFrame = time;
 
-	return delta * timeScale;
+	return (delta * timeScale);
 }
 
 void GameEngine::getFPS() {

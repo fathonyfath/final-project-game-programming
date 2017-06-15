@@ -4,6 +4,7 @@
 
 #include "Engine\Graphic\texture.h"
 #include "Engine\Graphic\sprite_renderer.h"
+#include "Engine\game_engine.h"
 
 class GameObject {
 public:
@@ -16,6 +17,7 @@ public:
 		rotation(0.0f) {};
 
 	void setSprite(const Texture2D& sprite);
+	void update(GameEngine* engine);
 	void render();
 	glm::vec3 position, scale, size, color;
 	float rotation;

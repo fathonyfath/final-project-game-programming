@@ -2,19 +2,26 @@
 
 #include "Engine\game_engine.h"
 
+#include <glm\gtx\compatibility.hpp>
+#include <cmath>
+
 GameState GameState::_instance;
 
 void GameState::init(GameEngine* engine) {
 	this->camera = new Camera(engine->getScreenWidth(), engine->getScreenHeight());
 
-	this->texture = ResourceManager::getTexture("Wall");
+	this->planeTexture = ResourceManager::getTexture("Pesawat");
+	this->pesawatBulletTexture = ResourceManager::getTexture("Wall");
 	Shader shader = ResourceManager::getShader("Sprite");
 
 	renderer = new SpriteRenderer(shader);
 	camera->updateShaderViewProjection(shader);
 
+	firstState = true;
+
 	// Initialize GameObjects
-	wallGameObject = new GameObject(*renderer, texture, glm::vec3(100, 100, 0));
+	planeGameObject = new Plane(*renderer, planeTexture, glm::vec3(50, 50, 0));
+	planeGameObject->position = glm::vec3(0, 0, 0);
 }
 
 void GameState::cleanup(GameEngine* engine) {
@@ -29,12 +36,45 @@ void GameState::resume(GameEngine* engine) {
 }
 
 void GameState::handleEvents(GameEngine * engine) {
-	glm::vec3 worldSpace = camera->screenToWorldSpace(engine->getMousePos());
-	this->worldPos = worldSpace;
+	glm::vec3 mousePos = camera->screenToWorldSpace(engine->getMousePos());
+	planeGameObject->mousePositionToWorld = mousePos;
+
+	if (engine->leftMouseDown() && canShot) {
+		shoot(planeGameObject->position, planeGameObject->rotation);
+		canShot = false;
+	}
 }
 
 void GameState::update(GameEngine * engine) {
-	wallGameObject->position = glm::vec3(worldPos.x, worldPos.y, 0.0f);
+	if (firstState) {
+		firstState = false;
+		return;
+	}
+
+	if (!canShot) {
+		if (currentTime < cooldown) {
+			currentTime += engine->getDeltaReadOnly();
+		} else {
+			currentTime = 0.0f;
+			canShot = true;
+		}
+	}
+
+	planeGameObject->update(engine);
+
+	// Bullet gameObject
+	for (unsigned int i = 0; i < bullets.size(); ++i) {
+		Bullet* bulletGameObject = bullets[i];
+		if ((bulletGameObject->position.x > 400.0f || bulletGameObject->position.x < -400.0f) ||
+			(bulletGameObject->position.y > 400.0f || bulletGameObject->position.y < -400.0f)) {
+			bullets.erase(bullets.begin() + i);
+		}
+	}
+
+	for (unsigned int i = 0; i < bullets.size(); ++i) {
+		Bullet* bulletGameObject = bullets[i];
+		bulletGameObject->update(engine);
+	}
 }
 
 void GameState::draw(GameEngine * engine) {
@@ -45,7 +85,19 @@ void GameState::draw(GameEngine * engine) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	wallGameObject->render();
+	for (unsigned int i = 0; i < bullets.size(); ++i) {
+		GameObject* bulletGameObject = bullets[i];
+		bulletGameObject->render();
+	}
+
+	planeGameObject->render();
 
 	glDisable(GL_BLEND);
+}
+
+void GameState::shoot(glm::vec3 position, float rotation) {
+	Bullet* bullet = new Bullet(*renderer, pesawatBulletTexture, glm::vec3(10, 10, 0));
+	bullet->position = position;
+	bullet->rotation = rotation;
+	bullets.push_back(bullet);
 }

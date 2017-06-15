@@ -43,12 +43,17 @@ public:
 	void logError(string errorString);
 	void logDebug(string debugString);
 
+	bool leftMouseDown();
+	bool rightMouseDown();
+
 	float getScreenHeight();
 	float getScreenWidth();
 	const Input* getInput();
 
 	glm::vec3 getMousePos();
 
+	float getDeltaReadOnly();
+	
 private:
 	vector<State*> states;
 	unsigned int lastFrame = 0, last = 0, _fps = 0, fps = 0;
@@ -60,10 +65,12 @@ private:
 	int frameCounter;
 	string windowTitle;
 
-	void limitFPS();
 	float getDeltaTime();
+	void limitFPS();
 	void getFPS();
 
 	void handleKeyEvent(Uint32 eventType, SDL_Keycode keycode);
 	Input* input;
+
+	float deltaTime;
 };
