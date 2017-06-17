@@ -5,13 +5,23 @@
 #include <glm\gtx\compatibility.hpp>
 #include <cmath>
 
+#define TINYC2_IMPL
+#include "Engine\Util\tinyc2.h"
+
 GameState GameState::_instance;
 
 void GameState::init(GameEngine* engine) {
 	this->camera = new Camera(engine->getScreenWidth(), engine->getScreenHeight());
 
-	this->planeTexture = ResourceManager::getTexture("Pesawat");
-	this->pesawatBulletTexture = ResourceManager::getTexture("Wall");
+	this->planeTexture = ResourceManager::getTexture("Player");
+	this->planeShadowTexture = ResourceManager::getTexture("PlayerShadow");
+	this->pesawatBulletTexture = ResourceManager::getTexture("Bullet");
+	this->backgroundTexture = ResourceManager::getTexture("Background");
+	this->enemyBoxTexture = ResourceManager::getTexture("EnemyBox");
+	this->enemyBoxShadowTexture = ResourceManager::getTexture("EnemyBoxShadow");
+	this->bulletImpactTexture = ResourceManager::getTexture("BulletImpact");
+	this->enemyBulletTexture = ResourceManager::getTexture("EnemyBullet");
+
 	Shader shader = ResourceManager::getShader("Sprite");
 
 	renderer = new SpriteRenderer(shader);
@@ -19,9 +29,23 @@ void GameState::init(GameEngine* engine) {
 
 	firstState = true;
 
+	this->background = new GameObject(*renderer, backgroundTexture, glm::vec3(520, 620, 0));
+	this->background->position = glm::vec3(0, 0, 0);
+
 	// Initialize GameObjects
-	planeGameObject = new Plane(*renderer, planeTexture, glm::vec3(50, 50, 0));
+	planeGameObject = new Plane(*renderer, planeTexture, glm::vec3(40, 40, 0));
 	planeGameObject->position = glm::vec3(0, 0, 0);
+	planeShadowObject = new GameObject(*renderer, planeShadowTexture, glm::vec3(20, 20, 0));
+
+	// Initialize Enemies
+	for (int i = 0; i < 5; i++) {
+		EnemyPlane* enemyPlane = new EnemyPlane(*renderer, enemyBoxTexture, glm::vec3(20, 20, 0));
+		GameObject* enemyShadow = new GameObject(*renderer, enemyBoxShadowTexture, glm::vec3(10, 10, 0));
+		enemies.push_back(enemyPlane);
+		enemiesShadow.push_back(enemyShadow);
+	}
+
+	getAndUpdateNearestEnemyPlane();
 }
 
 void GameState::cleanup(GameEngine* engine) {
@@ -43,10 +67,15 @@ void GameState::handleEvents(GameEngine * engine) {
 		shoot(planeGameObject->position, planeGameObject->rotation);
 		canShot = false;
 	}
+
+	if (engine->rightMouseDown()) {
+		getAndUpdateNearestEnemyPlane();
+	}
 }
 
 void GameState::update(GameEngine * engine) {
 	if (firstState) {
+		cooldown = 0.1f;
 		firstState = false;
 		return;
 	}
@@ -61,6 +90,20 @@ void GameState::update(GameEngine * engine) {
 	}
 
 	planeGameObject->update(engine);
+	planeShadowObject->rotation = planeGameObject->rotation;
+	planeShadowObject->position.x = planeGameObject->position.x - 20.0f;
+	planeShadowObject->position.y = planeGameObject->position.y - 20.0f;
+
+
+	// Enemy gameObject
+	for (unsigned int i = 0; i < enemies.size(); ++i) {
+		EnemyPlane* enemyGameObject = enemies[i];
+		GameObject* enemyShadow = enemiesShadow[i];
+		enemyGameObject->update(engine);
+		enemyShadow->rotation = enemyGameObject->rotation;
+		enemyShadow->position.x = enemyGameObject->position.x - 20.0f;
+		enemyShadow->position.y = enemyGameObject->position.y - 20.0f;
+	}
 
 	// Bullet gameObject
 	for (unsigned int i = 0; i < bullets.size(); ++i) {
@@ -75,6 +118,60 @@ void GameState::update(GameEngine * engine) {
 		Bullet* bulletGameObject = bullets[i];
 		bulletGameObject->update(engine);
 	}
+
+	for (unsigned int i = 0; i < bulletsToPlayer.size(); ++i) {
+		Bullet* bulletGameObject = bulletsToPlayer[i];
+		if ((bulletGameObject->position.x > 400.0f || bulletGameObject->position.x < -400.0f) ||
+			(bulletGameObject->position.y > 400.0f || bulletGameObject->position.y < -400.0f)) {
+			bulletsToPlayer.erase(bulletsToPlayer.begin() + i);
+		}
+	}
+
+	for (unsigned int i = 0; i < bulletsToPlayer.size(); ++i) {
+		Bullet* bulletGameObject = bulletsToPlayer[i];
+		bulletGameObject->update(engine);
+	}
+
+
+	// Collision Check Bullet to EnemyPlane
+	for (unsigned int i = 0; i < enemies.size(); ++i) {
+		EnemyPlane* enemyGameObject = enemies[i];
+		for (unsigned int j = 0; j < bullets.size(); ++j) {
+			Bullet* bulletGameObject = bullets[j];
+			int collisionCheck = c2CircletoCircle(enemyGameObject->collider, bulletGameObject->collider);
+			if (collisionCheck) {
+				BulletImpact* impact = new BulletImpact(*renderer, this->bulletImpactTexture, glm::vec3(12, 23, 0));
+				impact->position = bulletGameObject->position;
+				impact->rotation = bulletGameObject->rotation;
+				bulletImpacts.push_back(impact);
+
+				bullets.erase(bullets.begin() + j);
+				enemyGameObject->health--;
+				if (enemyGameObject->health <= 0) {
+					enemyGameObject->isDead = true;
+					enemyPlaneDestroyed(enemyGameObject->position, enemyGameObject->rotation);
+					enemies.erase(enemies.begin() + i);
+					enemiesShadow.erase(enemiesShadow.begin() + i);
+				}
+			}
+		}
+	}
+
+	for (unsigned int i = 0; i < bulletImpacts.size(); ++i) {
+		BulletImpact* bulletImpact = bulletImpacts[i];
+		bulletImpact->update(engine);
+
+		if (!bulletImpact->isActive) {
+			bulletImpacts.erase(bulletImpacts.begin() + i);
+		}
+	}
+
+	if (planeGameObject->currentTarget != NULL) {
+		EnemyPlane* enemy = (EnemyPlane*) planeGameObject->currentTarget;
+		if (enemy->isDead) {
+			getAndUpdateNearestEnemyPlane();
+		}
+	}
 }
 
 void GameState::draw(GameEngine * engine) {
@@ -85,19 +182,84 @@ void GameState::draw(GameEngine * engine) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	background->render();
+
+	// Render all shadow
+	planeShadowObject->render();
+	for (unsigned int i = 0; i < enemiesShadow.size(); ++i) {
+		GameObject* enemyShadow = enemiesShadow[i];
+		enemyShadow->render();
+	}
+
 	for (unsigned int i = 0; i < bullets.size(); ++i) {
-		GameObject* bulletGameObject = bullets[i];
+		Bullet* bulletGameObject = bullets[i];
 		bulletGameObject->render();
+	}
+
+	for (unsigned int i = 0; i < bulletsToPlayer.size(); ++i) {
+		Bullet* bulletToPlayer = bulletsToPlayer[i];
+		bulletToPlayer->render();
+	}
+
+	for (unsigned int i = 0; i < enemies.size(); ++i) {
+		EnemyPlane* enemyGameObject = enemies[i];
+		enemyGameObject->render();
 	}
 
 	planeGameObject->render();
 
+	for (unsigned int i = 0; i < bulletImpacts.size(); ++i) {
+		BulletImpact* bulletImpact = bulletImpacts[i];
+		bulletImpact->render();
+	}
+
 	glDisable(GL_BLEND);
 }
 
+void GameState::getAndUpdateNearestEnemyPlane() {
+	if (enemies.empty()) {
+		planeGameObject->setTarget(NULL);
+		return;
+	}
+	GameObject* nearest = enemies[0];
+	for (unsigned int i = 0; i < enemies.size(); ++i) {
+		EnemyPlane* enemyGameObject = enemies[i];
+		float oldDistance = glm::distance(planeGameObject->position, nearest->position);
+		float newDistance = glm::distance(planeGameObject->position, enemyGameObject->position);
+		if (newDistance < oldDistance) {
+			nearest = enemyGameObject;
+		}
+	}
+	planeGameObject->setTarget(nearest);
+}
+
 void GameState::shoot(glm::vec3 position, float rotation) {
-	Bullet* bullet = new Bullet(*renderer, pesawatBulletTexture, glm::vec3(10, 10, 0));
+	Bullet* bullet = new Bullet(*renderer, pesawatBulletTexture, glm::vec3(5, 9, 0), 2000.0f);
 	bullet->position = position;
 	bullet->rotation = rotation;
 	bullets.push_back(bullet);
+}
+
+void GameState::enemyPlaneDestroyed(glm::vec3 position, float rotation) {
+	float dir1 = rotation;
+	float dir2 = rotation + 90.0f;
+	float dir3 = rotation + 180.0f;
+	float dir4 = rotation + 270.0f;
+
+	Bullet* dir1Bullet = new Bullet(*renderer, enemyBulletTexture, glm::vec3(5, 9, 0), 200.0f);
+	dir1Bullet->position = position;
+	dir1Bullet->rotation = dir1;
+	Bullet* dir2Bullet = new Bullet(*renderer, enemyBulletTexture, glm::vec3(5, 9, 0), 200.0f);
+	dir2Bullet->position = position;
+	dir2Bullet->rotation = dir2;
+	Bullet* dir3Bullet = new Bullet(*renderer, enemyBulletTexture, glm::vec3(5, 9, 0), 200.0f);
+	dir3Bullet->position = position;
+	dir3Bullet->rotation = dir3;
+	Bullet* dir4Bullet = new Bullet(*renderer, enemyBulletTexture, glm::vec3(5, 9, 0), 200.0f);
+	dir4Bullet->position = position;
+	dir4Bullet->rotation = dir4;
+	bulletsToPlayer.push_back(dir1Bullet);
+	bulletsToPlayer.push_back(dir2Bullet);
+	bulletsToPlayer.push_back(dir3Bullet);
+	bulletsToPlayer.push_back(dir4Bullet);
 }

@@ -51,7 +51,7 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 
 	//Set VSYNC
 	SDL_GL_SetSwapInterval(vsync);
-	
+
 	this->windowState = WindowState::RUNNING;
 	// Init delta time calculation
 	last = SDL_GetTicks();
@@ -65,6 +65,16 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 	// Initialize Sprites
 	ResourceManager::loadTexture("./resource/sprite/wall.jpg", false, "Wall");
 	ResourceManager::loadTexture("./resource/sprite/pesawat.png", true, "Pesawat");
+
+	// Actual Resource Here
+	ResourceManager::loadTexture("./resource/sprite/background.png", false, "Background");
+	ResourceManager::loadTexture("./resource/sprite/player.png", true, "Player");
+	ResourceManager::loadTexture("./resource/sprite/player-shadow.png", true, "PlayerShadow");
+	ResourceManager::loadTexture("./resource/sprite/enemy-box.png", true, "EnemyBox");
+	ResourceManager::loadTexture("./resource/sprite/enemy-box-shadow.png", true, "EnemyBoxShadow");
+	ResourceManager::loadTexture("./resource/sprite/bullet.png", true, "Bullet");
+	ResourceManager::loadTexture("./resource/sprite/enemy-bullet.png", true, "EnemyBullet");
+	ResourceManager::loadTexture("./resource/sprite/bullet-impact.png", true, "BulletImpact");
 }
 
 void GameEngine::cleanup() {
@@ -122,6 +132,8 @@ void GameEngine::updateFPS() {
 }
 
 void GameEngine::handleEvent() {
+	rightButtonDown = false;
+
 	SDL_Event evt;
 
 	//Will keep looping until there are no more events to process
@@ -134,7 +146,12 @@ void GameEngine::handleEvent() {
 		case SDL_QUIT:
 			this->windowState = WindowState::EXIT;
 			break;
-		}
+		case SDL_MOUSEBUTTONDOWN:
+			if (evt.button.button == SDL_BUTTON_RIGHT) {
+				rightButtonDown = true;
+			}
+			break;
+		}	
 	}
 
 	// Handle mouse position update
@@ -193,7 +210,7 @@ bool GameEngine::leftMouseDown() {
 }
 
 bool GameEngine::rightMouseDown() {
-	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT);
+	return rightButtonDown;
 }
 
 float GameEngine::getScreenHeight() {

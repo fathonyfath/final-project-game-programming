@@ -73,4 +73,6 @@ private:
 	Input* input;
 
 	float deltaTime;
+
+	bool rightButtonDown = false;
 };

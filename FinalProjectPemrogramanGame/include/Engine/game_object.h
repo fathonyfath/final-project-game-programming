@@ -6,6 +6,8 @@
 #include "Engine\Graphic\sprite_renderer.h"
 #include "Engine\game_engine.h"
 
+#include "Engine\Util\tinyc2.h"
+
 class GameObject {
 public:
 	GameObject(SpriteRenderer& renderer, Texture2D& sprite, glm::vec3 size) : 

@@ -6,6 +6,8 @@
 #include "Engine\game_object.h"
 #include "Game\plane.h"
 #include "Game\bullet.h"
+#include "Game\enemy_plane.h"
+#include "Game\bullet_impact.h"
 
 #include <vector>
 
@@ -22,6 +24,8 @@ public:
 	void update(GameEngine* engine);
 	void draw(GameEngine* engine);
 
+	void getAndUpdateNearestEnemyPlane();
+
 	static GameState* instance() {
 		return &_instance;
 	}
@@ -35,18 +39,34 @@ private:
 
 	Texture2D planeTexture;
 	Texture2D pesawatBulletTexture;
+	Texture2D enemyBoxTexture;
+	Texture2D enemyBulletTexture;
+	Texture2D backgroundTexture;
+
+	Texture2D planeShadowTexture;
+	Texture2D enemyBoxShadowTexture;
+
+	Texture2D bulletImpactTexture;
+
+	GameObject* background;
 
 	Plane* planeGameObject;
+	GameObject* planeShadowObject;
 	std::vector<Bullet*> bullets;
-	std::vector<GameObject*> enemies;
+	std::vector<EnemyPlane*> enemies;
+	std::vector<GameObject*> enemiesShadow;
+	std::vector<BulletImpact*> bulletImpacts;
+
+	std::vector<Bullet*> bulletsToPlayer;
 
 	bool firstState = true;
 
 	bool canShot = true;
 
-	float cooldown = 0.3f;
+	float cooldown = 0.1f;
 	float currentTime = 0.0f;
 
 
 	void shoot(glm::vec3 position, float rotation);
+	void enemyPlaneDestroyed(glm::vec3 position, float rotation);
 };

@@ -7,6 +7,12 @@ public:
 	void update(GameEngine* engine);
 	glm::vec3 mousePositionToWorld;
 
+	void setTarget(GameObject* target) {
+		this->currentTarget = target;
+	}
+
+	GameObject* currentTarget = NULL;
+
 private:
 	float angleBetweenTwoVector(glm::vec3 a, glm::vec3 b) {
 		float first = a.y - b.y;
@@ -15,5 +21,5 @@ private:
 	}
 
 	Texture2D planeSprite;
-	float speed = 1000.0f;
+	float speed = 500.0f;
 };
