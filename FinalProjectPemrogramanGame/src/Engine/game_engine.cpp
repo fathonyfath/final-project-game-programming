@@ -75,6 +75,7 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 	ResourceManager::loadTexture("./resource/sprite/bullet.png", true, "Bullet");
 	ResourceManager::loadTexture("./resource/sprite/enemy-bullet.png", true, "EnemyBullet");
 	ResourceManager::loadTexture("./resource/sprite/bullet-impact.png", true, "BulletImpact");
+	ResourceManager::loadTexture("./resource/sprite/enemy-bullet-impact.png", true, "EnemyBulletImpact");
 }
 
 void GameEngine::cleanup() {

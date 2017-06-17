@@ -3,6 +3,13 @@
 #include "Engine\game_engine.h"
 
 void Plane::update(GameEngine* engine) {
+	if (cooldown > 0.0f) {
+		shieldActive = true;
+		cooldown -= engine->getDeltaReadOnly();
+	} else {
+		shieldActive = false;
+	}
+
 	if (currentTarget == NULL) {
 		float rotation = angleBetweenTwoVector(position, mousePositionToWorld) + 90.0f;
 		this->rotation = rotation;
@@ -22,4 +29,7 @@ void Plane::update(GameEngine* engine) {
 		glm::vec2 newPos = glm::vec2(position.x - xDir, position.y + yDir);
 		position = glm::vec3(newPos.x, newPos.y, 0.0f);
 	}
+
+	collider.p.x = position.x;
+	collider.p.y = position.y;
 }

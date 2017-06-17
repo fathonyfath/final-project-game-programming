@@ -21,6 +21,7 @@ void GameState::init(GameEngine* engine) {
 	this->enemyBoxShadowTexture = ResourceManager::getTexture("EnemyBoxShadow");
 	this->bulletImpactTexture = ResourceManager::getTexture("BulletImpact");
 	this->enemyBulletTexture = ResourceManager::getTexture("EnemyBullet");
+	this->bulletImpactEnemyTexture = ResourceManager::getTexture("EnemyBulletImpact");
 
 	Shader shader = ResourceManager::getShader("Sprite");
 
@@ -153,6 +154,33 @@ void GameState::update(GameEngine * engine) {
 					enemies.erase(enemies.begin() + i);
 					enemiesShadow.erase(enemiesShadow.begin() + i);
 				}
+			}
+		}
+	}
+
+	// Collision check between enemy to player
+	for (unsigned int i = 0; i < enemies.size(); ++i) {
+		EnemyPlane* enemyGameObject = enemies[i];
+		int collisionCheck = c2CircletoCircle(planeGameObject->collider, enemyGameObject->collider);
+		if (collisionCheck && !planeGameObject->shieldActive) {
+			planeGameObject->resetShiled();
+			engine->logDebug("Hit with enemy");
+		}
+	}
+
+	// Collision check between enemy bullet to player
+	for (unsigned int i = 0; i < bulletsToPlayer.size(); ++i) {
+		Bullet* bulletToPlayer = bulletsToPlayer[i];
+		int collisionCheck = c2CircletoCircle(planeGameObject->collider, bulletToPlayer->collider);
+		if (collisionCheck) {
+			BulletImpact* impact = new BulletImpact(*renderer, this->bulletImpactEnemyTexture, glm::vec3(17, 10, 0));
+			impact->position = bulletToPlayer->position;
+			impact->rotation = bulletToPlayer->rotation;
+			bulletImpacts.push_back(impact);
+
+			bulletsToPlayer.erase(bulletsToPlayer.begin() + i);
+			if (!planeGameObject->shieldActive) {
+
 			}
 		}
 	}

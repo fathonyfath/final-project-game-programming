@@ -47,6 +47,7 @@ private:
 	Texture2D enemyBoxShadowTexture;
 
 	Texture2D bulletImpactTexture;
+	Texture2D bulletImpactEnemyTexture;
 
 	GameObject* background;
 
