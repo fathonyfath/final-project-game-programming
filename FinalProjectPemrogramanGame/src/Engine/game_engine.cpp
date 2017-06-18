@@ -3,8 +3,6 @@
 #include "imgui\imgui.h"
 #include "imgui\imgui_impl_sdl_gl3.h"
 
-#include <irrKlang\irrKlang.h>
-
 void GameEngine::init(string title, unsigned int width, unsigned int height, bool vsync, WindowFlag windowFlag, unsigned int targetFrameRate, float timeScale) {
 	//Initialize SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -83,6 +81,9 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 	ResourceManager::loadTexture("./resource/sprite/target.png", true, "Target");
 	ResourceManager::loadTexture("./resource/sprite/health-filled.png", true, "HealthFilled");
 	ResourceManager::loadTexture("./resource/sprite/health-empty.png", true, "HealthEmpty");
+
+	soundEngine = createIrrKlangDevice();
+	soundEngine->play2D(this->bgm, true);
 }
 
 void GameEngine::cleanup() {

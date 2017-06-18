@@ -88,6 +88,7 @@ void GameState::handleEvents(GameEngine * engine) {
 
 	if (engine->leftMouseDown() && canShot && planeGameObject->health > 0) {
 		shoot(planeGameObject->position, planeGameObject->rotation);
+		engine->playBeam();
 		canShot = false;
 	}
 
@@ -171,8 +172,10 @@ void GameState::update(GameEngine * engine) {
 				bulletImpacts.push_back(impact);
 
 				bullets.erase(bullets.begin() + j);
+				engine->playHit();
 				enemyGameObject->health--;
 				if (enemyGameObject->health <= 0) {
+					engine->playExplosion();
 					enemyGameObject->isDead = true;
 					enemyPlaneDestroyed(enemyGameObject->position, enemyGameObject->rotation);
 					enemies.erase(enemies.begin() + i);
@@ -187,8 +190,12 @@ void GameState::update(GameEngine * engine) {
 		EnemyPlane* enemyGameObject = enemies[i];
 		int collisionCheck = c2CircletoCircle(planeGameObject->collider, enemyGameObject->collider);
 		if (collisionCheck && !planeGameObject->shieldActive) {
+			engine->playHit();
 			planeGameObject->resetShiled();
 			planeGameObject->health--;
+			if (planeGameObject->health <= 0) {
+				engine->playExplosion();
+			}
 		}
 	}
 
@@ -204,8 +211,12 @@ void GameState::update(GameEngine * engine) {
 
 			bulletsToPlayer.erase(bulletsToPlayer.begin() + i);
 			if (!planeGameObject->shieldActive) {
+				engine->playHit();
 				planeGameObject->resetShiled();
 				planeGameObject->health--;
+				if (planeGameObject->health <= 0) {
+					engine->playExplosion();
+				}
 			}
 		}
 	}

@@ -15,7 +15,11 @@
 #include "Engine\Graphic\sprite_renderer.h"
 #include "Engine\Util\camera.h"
 
+#include <irrKlang\irrKlang.h>
+
 using namespace std;
+
+using namespace irrklang;
 
 enum class WindowState { RUNNING, EXIT };
 enum class WindowFlag { WINDOWED, FULLSCREEN, EXCLUSIVE_FULLSCREEN, BORDERLESS };
@@ -57,6 +61,16 @@ public:
 	int getFrameRate() {
 		return (int)this->fps;
 	};
+
+	void playBeam() {
+		soundEngine->play2D(this->beam, false);
+	};
+	void playExplosion() {
+		soundEngine->play2D(this->explosion, false);
+	};
+	void playHit() {
+		soundEngine->play2D(this->hit, false);
+	};
 	
 private:
 	vector<State*> states;
@@ -79,4 +93,11 @@ private:
 	float deltaTime;
 
 	bool rightButtonDown = false;
+
+	ISoundEngine *soundEngine;
+
+	const char* bgm = "./resource/audio/loop alt2.mp3";
+	const char* beam = "./resource/audio/beam.mp3";
+	const char* explosion = "./resource/audio/explosion.mp3";
+	const char* hit = "./resource/audio/hit.mp3";
 };
