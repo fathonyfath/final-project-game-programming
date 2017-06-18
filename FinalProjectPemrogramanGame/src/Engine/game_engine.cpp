@@ -1,5 +1,8 @@
 #include "Engine\game_engine.h"
 
+#include "imgui\imgui.h"
+#include "imgui\imgui_impl_sdl_gl3.h"
+
 void GameEngine::init(string title, unsigned int width, unsigned int height, bool vsync, WindowFlag windowFlag, unsigned int targetFrameRate, float timeScale) {
 	//Initialize SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -59,6 +62,8 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 	// Initialize input module
 	this->input = new Input();
 
+	ImGui_ImplSdlGL3_Init(this->window);
+
 	// Initialize Shader
 	ResourceManager::loadShader("./resource/shader/sprite.vert", "./resource/shader/sprite.frag", nullptr, "Sprite");
 
@@ -82,6 +87,8 @@ void GameEngine::cleanup() {
 	}
 
 	delete(this->input);
+
+	ImGui_ImplSdlGL3_Shutdown();
 
 	// shutdown SDL
 	SDL_Quit();
@@ -135,6 +142,8 @@ void GameEngine::handleEvent() {
 
 	//Will keep looping until there are no more events to process
 	while (SDL_PollEvent(&evt)) {
+		ImGui_ImplSdlGL3_ProcessEvent(&evt);
+
 		switch (evt.type) {
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
@@ -165,6 +174,8 @@ void GameEngine::handleEvent() {
 }
 
 void GameEngine::update() {
+	ImGui_ImplSdlGL3_NewFrame(window);
+
 	// let the state update the game
 	if (!states.empty()) {
 		states.back()->update(this);
@@ -172,6 +183,8 @@ void GameEngine::update() {
 }
 
 void GameEngine::draw() {
+	ImGui::Render();
+
 	// let the state draw the screen
 	if (!states.empty()) {
 		states.back()->draw(this);

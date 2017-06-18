@@ -53,6 +53,10 @@ public:
 	glm::vec3 getMousePos();
 
 	float getDeltaReadOnly();
+
+	int getFrameRate() {
+		return (int)this->fps;
+	};
 	
 private:
 	vector<State*> states;

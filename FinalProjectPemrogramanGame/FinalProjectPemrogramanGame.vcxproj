@@ -143,6 +143,7 @@
     <ClCompile Include="src\Game\bullet_impact.cpp" />
     <ClCompile Include="src\Game\enemy_plane.cpp" />
     <ClCompile Include="src\Game\game_state.cpp" />
+    <ClCompile Include="src\Game\menu_state.cpp" />
     <ClCompile Include="src\Game\plane.cpp" />
     <ClCompile Include="src\imgui\imgui.cpp" />
     <ClCompile Include="src\imgui\imgui_demo.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="include\Engine\Graphic\shader.h" />
     <ClInclude Include="include\Engine\Util\state.h" />
     <ClInclude Include="include\Engine\Graphic\texture.h" />
+    <ClInclude Include="include\Game\menu_state.h" />
     <ClInclude Include="include\Game\plane.h" />
     <ClInclude Include="include\imgui\imconfig.h" />
     <ClInclude Include="include\imgui\imgui.h" />

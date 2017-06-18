@@ -1,12 +1,13 @@
 #include "Engine\game_engine.h"
 #include "Game\game_state.h"
+#include "Game\menu_state.h"
 
 int main(int argc, char** argv) {
 	GameEngine engine;
 	engine.init("Test Game Engine", 520, 620, false, WindowFlag::WINDOWED, 0, 1);
 	engine.setDebugFPS(true);
 
-	engine.changeState(GameState::instance());
+	engine.changeState(MenuState::instance());
 
 	while (engine.isRunning()) {
 		engine.updateFPS();
