@@ -144,6 +144,10 @@
     <ClCompile Include="src\Game\enemy_plane.cpp" />
     <ClCompile Include="src\Game\game_state.cpp" />
     <ClCompile Include="src\Game\plane.cpp" />
+    <ClCompile Include="src\imgui\imgui.cpp" />
+    <ClCompile Include="src\imgui\imgui_demo.cpp" />
+    <ClCompile Include="src\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\imgui\imgui_impl_sdl_gl3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Engine\game_object.h" />
@@ -162,6 +166,13 @@
     <ClInclude Include="include\Engine\Util\state.h" />
     <ClInclude Include="include\Engine\Graphic\texture.h" />
     <ClInclude Include="include\Game\plane.h" />
+    <ClInclude Include="include\imgui\imconfig.h" />
+    <ClInclude Include="include\imgui\imgui.h" />
+    <ClInclude Include="include\imgui\imgui_impl_sdl_gl3.h" />
+    <ClInclude Include="include\imgui\imgui_internal.h" />
+    <ClInclude Include="include\imgui\stb_rect_pack.h" />
+    <ClInclude Include="include\imgui\stb_textedit.h" />
+    <ClInclude Include="include\imgui\stb_truetype.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

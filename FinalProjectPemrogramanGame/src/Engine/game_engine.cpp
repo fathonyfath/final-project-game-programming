@@ -62,10 +62,6 @@ void GameEngine::init(string title, unsigned int width, unsigned int height, boo
 	// Initialize Shader
 	ResourceManager::loadShader("./resource/shader/sprite.vert", "./resource/shader/sprite.frag", nullptr, "Sprite");
 
-	// Initialize Sprites
-	ResourceManager::loadTexture("./resource/sprite/wall.jpg", false, "Wall");
-	ResourceManager::loadTexture("./resource/sprite/pesawat.png", true, "Pesawat");
-
 	// Actual Resource Here
 	ResourceManager::loadTexture("./resource/sprite/background.png", false, "Background");
 	ResourceManager::loadTexture("./resource/sprite/player.png", true, "Player");

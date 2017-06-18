@@ -3,7 +3,7 @@
 
 class Plane : public GameObject {
 public:
-	Plane(SpriteRenderer& renderer, Texture2D& sprite, glm::vec3 size) : GameObject(renderer, sprite, size), shieldActive(false), cooldown(0.0f), resetCooldown(1.5f) {
+	Plane(SpriteRenderer& renderer, Texture2D& sprite, glm::vec3 size) : GameObject(renderer, sprite, size), shieldActive(false), cooldown(0.0f), resetCooldown(1.5f), health(3) {
 		collider.p = colliderPos;
 		collider.r = 20.0f;
 	};
@@ -23,6 +23,8 @@ public:
 
 	bool shieldActive;
 	float cooldown;
+
+	int health;
 
 	GameObject* currentTarget = NULL;
 
