@@ -4,8 +4,8 @@
 
 int main(int argc, char** argv) {
 	GameEngine engine;
-	engine.init("Test Game Engine", 520, 620, false, WindowFlag::WINDOWED, 0, 1);
-	engine.setDebugFPS(true);
+	engine.init("Quez", 520, 620, false, WindowFlag::WINDOWED, 0, 1);
+	engine.setDebugFPS(false);
 
 	engine.changeState(MenuState::instance());
 

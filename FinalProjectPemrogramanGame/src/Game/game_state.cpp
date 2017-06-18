@@ -1,6 +1,7 @@
 #include "Game\game_state.h"
 
 #include "Engine\game_engine.h"
+#include "Game\menu_state.h"
 
 #include <glm\gtx\compatibility.hpp>
 #include <cmath>
@@ -22,6 +23,16 @@ void GameState::init(GameEngine* engine) {
 	this->bulletImpactTexture = ResourceManager::getTexture("BulletImpact");
 	this->enemyBulletTexture = ResourceManager::getTexture("EnemyBullet");
 	this->bulletImpactEnemyTexture = ResourceManager::getTexture("EnemyBulletImpact");
+	this->targetTexture = ResourceManager::getTexture("Target");
+	this->shieldTexture = ResourceManager::getTexture("Shield");
+	this->health1Filled = ResourceManager::getTexture("HealthFilled");
+	this->health1Empty = ResourceManager::getTexture("HealthEmpty");
+
+	this->health2Filled = ResourceManager::getTexture("HealthFilled");
+	this->health2Empty = ResourceManager::getTexture("HealthEmpty");
+
+	this->health3Filled = ResourceManager::getTexture("HealthFilled");
+	this->health3Empty = ResourceManager::getTexture("HealthEmpty");
 
 	Shader shader = ResourceManager::getShader("Sprite");
 
@@ -38,15 +49,26 @@ void GameState::init(GameEngine* engine) {
 	planeGameObject->position = glm::vec3(0, 0, 0);
 	planeShadowObject = new GameObject(*renderer, planeShadowTexture, glm::vec3(20, 20, 0));
 
-	// Initialize Enemies
-	for (int i = 0; i < 5; i++) {
-		EnemyPlane* enemyPlane = new EnemyPlane(*renderer, enemyBoxTexture, glm::vec3(20, 20, 0));
-		GameObject* enemyShadow = new GameObject(*renderer, enemyBoxShadowTexture, glm::vec3(10, 10, 0));
-		enemies.push_back(enemyPlane);
-		enemiesShadow.push_back(enemyShadow);
-	}
+	durationBetweenSpawn = 2.0f;
+	maxWave = 50;
+	currentWave = 1;
+	currentDuration = durationBetweenSpawn;
 
-	getAndUpdateNearestEnemyPlane();
+	enemies.clear();
+
+	// Shiled etc
+	this->shieldObject = new GameObject(*renderer, shieldTexture, glm::vec3(58, 58, 0));
+	this->targetObject = new GameObject(*renderer, targetTexture, glm::vec3(44, 43, 0));
+
+	this->gameOverDelay = 3.0f;
+
+	health1Object = new GameObject(*renderer, health1Filled, glm::vec3(19, 18, 0));
+	health2Object = new GameObject(*renderer, health2Filled, glm::vec3(19, 18, 0));
+	health3Object = new GameObject(*renderer, health3Filled, glm::vec3(19, 18, 0));
+
+	health3Object->position = glm::vec3(-260 + 19, 310 - 18, 0);
+	health2Object->position = glm::vec3(-260 + 19 + 22, 310 - 18, 0);
+	health1Object->position = glm::vec3(-260 + 19 + 22 + 22, 310 - 18, 0);
 }
 
 void GameState::cleanup(GameEngine* engine) {
@@ -64,12 +86,12 @@ void GameState::handleEvents(GameEngine * engine) {
 	glm::vec3 mousePos = camera->screenToWorldSpace(engine->getMousePos());
 	planeGameObject->mousePositionToWorld = mousePos;
 
-	if (engine->leftMouseDown() && canShot) {
+	if (engine->leftMouseDown() && canShot && planeGameObject->health > 0) {
 		shoot(planeGameObject->position, planeGameObject->rotation);
 		canShot = false;
 	}
 
-	if (engine->rightMouseDown()) {
+	if (engine->rightMouseDown() && planeGameObject->health > 0) {
 		getAndUpdateNearestEnemyPlane();
 	}
 }
@@ -89,6 +111,8 @@ void GameState::update(GameEngine * engine) {
 			canShot = true;
 		}
 	}
+
+	updateLevelWave(engine->getDeltaReadOnly());
 
 	planeGameObject->update(engine);
 	planeShadowObject->rotation = planeGameObject->rotation;
@@ -164,7 +188,7 @@ void GameState::update(GameEngine * engine) {
 		int collisionCheck = c2CircletoCircle(planeGameObject->collider, enemyGameObject->collider);
 		if (collisionCheck && !planeGameObject->shieldActive) {
 			planeGameObject->resetShiled();
-			engine->logDebug("Hit with enemy");
+			planeGameObject->health--;
 		}
 	}
 
@@ -180,7 +204,8 @@ void GameState::update(GameEngine * engine) {
 
 			bulletsToPlayer.erase(bulletsToPlayer.begin() + i);
 			if (!planeGameObject->shieldActive) {
-
+				planeGameObject->resetShiled();
+				planeGameObject->health--;
 			}
 		}
 	}
@@ -200,6 +225,44 @@ void GameState::update(GameEngine * engine) {
 			getAndUpdateNearestEnemyPlane();
 		}
 	}
+
+	// Sync shield position
+	shieldObject->position = planeGameObject->position;
+
+	// Sync target position
+	if (planeGameObject->currentTarget != NULL) {
+		targetObject->position = planeGameObject->currentTarget->position;
+	}
+
+	if (planeGameObject->health <= 0) {
+		gameOverDelay -= engine->getDeltaReadOnly();
+	}
+	if (gameOverDelay <= 0.0f) {
+		engine->popState();
+		engine->changeState(MenuState::instance());
+	}
+
+	if (planeGameObject->health == 3) {
+		health1Object->setSprite(health1Filled);
+		health2Object->setSprite(health2Filled);
+		health3Object->setSprite(health3Filled);
+	} else if (planeGameObject->health == 2) {
+		health1Object->setSprite(health1Empty);
+		health2Object->setSprite(health2Filled);
+		health3Object->setSprite(health3Filled);
+	} else if (planeGameObject->health == 1) {
+		health1Object->setSprite(health1Empty);
+		health2Object->setSprite(health2Empty);
+		health3Object->setSprite(health3Filled);
+	} else if (planeGameObject->health == 0) {
+		health1Object->setSprite(health1Empty);
+		health2Object->setSprite(health2Empty);
+		health3Object->setSprite(health3Empty);
+	} else {
+		health1Object->setSprite(health1Empty);
+		health2Object->setSprite(health2Empty);
+		health3Object->setSprite(health3Empty);
+	}
 }
 
 void GameState::draw(GameEngine * engine) {
@@ -213,7 +276,10 @@ void GameState::draw(GameEngine * engine) {
 	background->render();
 
 	// Render all shadow
-	planeShadowObject->render();
+	if (planeGameObject->health > 0) {
+		planeShadowObject->render();
+	}
+
 	for (unsigned int i = 0; i < enemiesShadow.size(); ++i) {
 		GameObject* enemyShadow = enemiesShadow[i];
 		enemyShadow->render();
@@ -234,12 +300,26 @@ void GameState::draw(GameEngine * engine) {
 		enemyGameObject->render();
 	}
 
-	planeGameObject->render();
+	if (planeGameObject->health > 0) {
+		planeGameObject->render();
+	}
 
 	for (unsigned int i = 0; i < bulletImpacts.size(); ++i) {
 		BulletImpact* bulletImpact = bulletImpacts[i];
 		bulletImpact->render();
 	}
+
+	if (planeGameObject->currentTarget != NULL) {
+		targetObject->render();
+	}
+
+	if (planeGameObject->shieldActive && planeGameObject->health > 0) {
+		shieldObject->render();
+	}
+
+	health1Object->render();
+	health2Object->render();
+	health3Object->render();
 
 	glDisable(GL_BLEND);
 }
@@ -259,6 +339,28 @@ void GameState::getAndUpdateNearestEnemyPlane() {
 		}
 	}
 	planeGameObject->setTarget(nearest);
+}
+
+void GameState::updateLevelWave(float deltaTime) {
+	if (enemies.empty()) {
+		if (currentDuration > 0.0f) {
+			currentDuration -= deltaTime;
+		} else {
+			currentDuration = durationBetweenSpawn;
+			for (int i = 0; i < currentWave; ++i) {
+				EnemyPlane* enemyPlane = new EnemyPlane(*renderer, enemyBoxTexture, glm::vec3(20, 20, 0));
+				GameObject* enemyShadow = new GameObject(*renderer, enemyBoxShadowTexture, glm::vec3(10, 10, 0));
+				enemies.push_back(enemyPlane);
+				enemiesShadow.push_back(enemyShadow);
+			}
+			if (currentWave < maxWave) {
+				currentWave++;
+			}
+
+			planeGameObject->resetShiled();
+			getAndUpdateNearestEnemyPlane();
+		}
+	}
 }
 
 void GameState::shoot(glm::vec3 position, float rotation) {

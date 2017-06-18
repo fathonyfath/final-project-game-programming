@@ -6,7 +6,6 @@
 MenuState MenuState::_instance;
 
 void MenuState::init(GameEngine * engine) {
-
 }
 
 void MenuState::cleanup(GameEngine * engine) {
@@ -32,6 +31,7 @@ void MenuState::update(GameEngine * engine) {
 	ImGui::Begin("Quez", &show_window);
 	ImGui::SetNextWindowSize(ImVec2(100, 100), ImGuiSetCond_FirstUseEver);
 	if (ImGui::Button("Play the Game!")) {
+		engine->popState();
 		engine->changeState(GameState::instance());
 	}
 	if (ImGui::Button("Exit Game")) {

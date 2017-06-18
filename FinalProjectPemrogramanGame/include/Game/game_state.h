@@ -25,6 +25,7 @@ public:
 	void draw(GameEngine* engine);
 
 	void getAndUpdateNearestEnemyPlane();
+	void updateLevelWave(float deltaTime);
 
 	static GameState* instance() {
 		return &_instance;
@@ -49,6 +50,18 @@ private:
 	Texture2D bulletImpactTexture;
 	Texture2D bulletImpactEnemyTexture;
 
+	Texture2D shieldTexture;
+	Texture2D targetTexture;
+
+	Texture2D health1Filled;
+	Texture2D health1Empty;
+
+	Texture2D health2Filled;
+	Texture2D health2Empty;
+
+	Texture2D health3Filled;
+	Texture2D health3Empty;
+
 	GameObject* background;
 
 	Plane* planeGameObject;
@@ -60,13 +73,27 @@ private:
 
 	std::vector<Bullet*> bulletsToPlayer;
 
+	GameObject* targetObject;
+	GameObject* shieldObject;
+
+	GameObject* health1Object;
+	GameObject* health2Object;
+	GameObject* health3Object;
+
 	bool firstState = true;
 
 	bool canShot = true;
+	bool showShield = false;
 
 	float cooldown = 0.1f;
 	float currentTime = 0.0f;
 
+	float gameOverDelay = 3.0f;
+
+	float currentDuration;
+	float durationBetweenSpawn;
+	int currentWave;
+	int maxWave;
 
 	void shoot(glm::vec3 position, float rotation);
 	void enemyPlaneDestroyed(glm::vec3 position, float rotation);
