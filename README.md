@@ -1,7 +1,7 @@
 # Quez
 Game ini ditulis untuk memenuhi tugas akhir dari mata kuliah **Pemrograman Game**.
 ## High Concept
-Apakah anda pernah memainkan game yang menguji ketelitian anda? Game yang berelemen shooter ini akan menyelimuti pemarin dengan ratusan peluru yang ditembakkan ke arah pemain. Sampai manakah anda dapat bertahan? Bersiaplah!
+Apakah anda pernah memainkan game yang menguji ketelitian anda? Game yang berelemen shooter ini akan menyelimuti level dengan ratusan peluru yang ditembakkan ke arah pemain. Sampai manakah anda dapat bertahan? Bersiaplah!
 ## Features
 * _Bullet-rain, shooter game_
 * _Endless gameplay_
